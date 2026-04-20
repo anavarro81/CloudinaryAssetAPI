@@ -2,9 +2,10 @@
   "name": "cloudinaryassetapi",
   "version": "1.0.0",
   "description": "A Node.js API to fetch and serve image assets from specific Cloudinary folders",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "",
+    "test": "",
     "dev": "nodemon app.js"
   },
   "repository": {
@@ -24,6 +25,7 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "formidable": "^3.5.4",
     "helmet": "^8.1.0"
   },
   "devDependencies": {
