@@ -1,16 +1,13 @@
-import { v2 as cloudinary } from "cloudinary";
 import cors from "cors";
 import express from "express";
 import helmet from "helmet";
 import dotenv from "dotenv";
-dotenv.config();
-const app = express();
+import cloudinary from "./config/index.js";
+import { uploadImage } from "./services/cloudinary.js";
 
-cloudinary.config({
-  cloud_name: process.env.CLOUD_NAME,
-  api_key: process.env.API_KEY,
-  api_secret: process.env.API_SECRET,
-});
+dotenv.config();
+
+const app = express();
 
 app.use(cors());
 app.use(express.json());
@@ -21,32 +18,25 @@ app.get("/health", (req, res) => {
   res.status(200).json({ status: "ok" });
 });
 
-app.post("/dogs/photos", (req, res) => {
+app.post("/dogs/photos", async (req, res) => {
   const { dogName = "Mascota", description } = req.body;
 
-  console.log("description ", description);
+  let context =
+    `nombre=${dogName}` + `${description ? `|description=${description}` : ""}`;
 
-  let context = `nombre=${dogName}` + `${description ? `|description=${description}` : ""}`;
+  const { success, message } = await uploadImage("./dog1.jpg", context);
 
-  console.log("contexto ", context);
+  console.log("success ", success);
+  console.log("message ", message);
 
-  try {
-    // Sube la imagen a la carpeta indica foder.
-    cloudinary.uploader
-      .upload("dog2.jpg", {
-        resource_type: "image",
-        public_id: "dog2",
-        overwrite: true,
-        context,
-        notification_url: "https://mysite.example.com/notify_endpoint",
-        folder: "recentUploads",
-      })
-      .then((result) => console.log("foto insertada correctamente"));
-  } catch (error) {
-    console.log("error al subir la imagen ", error);
+  if (success) {
+    console.log("Foto subida correctamente");
+    console.log("datos de la foto ", message);
+    res.status(200).json({ status: "Foto subida correctamente" });
+  } else {
+    console.error("Error al subir la foto ", message);
+    res.status(400).json({ status: "Error al subir la foto" });
   }
-
-  res.status(200).json({ status: "Foto subida correctamente" });
 });
 
 // Descarga las imagenes de la carpeta: recentUploads
