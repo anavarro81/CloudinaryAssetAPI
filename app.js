@@ -24,17 +24,14 @@ app.post("/dogs/photos", async (req, res) => {
   let context =
     `nombre=${dogName}` + `${description ? `|description=${description}` : ""}`;
 
-  const { success, message } = await uploadImage("./dog1.jpg", context);
-
-  console.log("success ", success);
-  console.log("message ", message);
+  const { success, data, error } = await uploadImage("./dog1.jpg", context);
 
   if (success) {
     console.log("Foto subida correctamente");
-    console.log("datos de la foto ", message);
+    console.log("datos de la foto ", data);
     res.status(200).json({ status: "Foto subida correctamente" });
   } else {
-    console.error("Error al subir la foto ", message);
+    console.error("Error al subir la foto ", error);
     res.status(400).json({ status: "Error al subir la foto" });
   }
 });
