@@ -4,6 +4,7 @@ import helmet from "helmet";
 import dotenv from "dotenv";
 import cloudinary from "./config/index.js";
 import { uploadImage, listImages } from "./services/cloudinary.js";
+import {sanitizeForContext} from './utils.js'
 
 dotenv.config();
 
@@ -21,8 +22,11 @@ app.get("/health", (req, res) => {
 app.post("/dogs/photos", async (req, res) => {
   const { dogName = "Mascota", description } = req.body;
 
+  const safeName = sanitizeForContext(dogName)
+  const safeDescription = sanitizeForContext(description)
+
   let context =
-    `nombre=${dogName}` + `${description ? `|description=${description}` : ""}`;
+    `name=${safeName}` + `${safeDescription ? `|description=${safeDescription}` : ""}`;
 
   const { success, data, error } = await uploadImage("./dog1.jpg", context);
 
