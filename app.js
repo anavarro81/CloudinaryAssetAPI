@@ -3,7 +3,7 @@ import express from "express";
 import helmet from "helmet";
 import dotenv from "dotenv";
 import cloudinary from "./config/index.js";
-import { uploadImage } from "./services/cloudinary.js";
+import { uploadImage, listImages } from "./services/cloudinary.js";
 
 dotenv.config();
 
@@ -27,8 +27,7 @@ app.post("/dogs/photos", async (req, res) => {
   const { success, data, error } = await uploadImage("./dog1.jpg", context);
 
   if (success) {
-    console.log("Foto subida correctamente");
-    console.log("datos de la foto ", data);
+    console.log("Foto subida ", data);
     res.status(200).json({ status: "Foto subida correctamente" });
   } else {
     console.error("Error al subir la foto ", error);
@@ -36,21 +35,19 @@ app.post("/dogs/photos", async (req, res) => {
   }
 });
 
-// Descarga las imagenes de la carpeta: recentUploads
-// const getImages = async () => {
-//   try {
-//     await cloudinary.search
-//       .expression("folder: recentUploads")
-//       .sort_by("public_id", "desc")
-//       .max_results(3)
-//       .execute()
-//       .then((result) => console.log(result));
-//   } catch (error) {
-//     console.log("error al recuperar la imagen ", error);
-//   }
-// };
+app.get("/dogs", async (req, res) => {
+  const { success, data, error } = await listImages();
 
-// getImages();
+  console.log("success ", success);
+
+  if (success) {
+    console.log("data ", data.resources);
+    res.status(200).json({ success, data });
+  } else {
+    console.log("error al descargar las imagenes ", error);
+    res.status(400).json({ success, error });
+  }
+});
 
 app.listen(process.env.PORT, () => {
   console.log(`Server running on PORT: ${process.env.PORT}`);
