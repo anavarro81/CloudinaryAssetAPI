@@ -11,3 +11,13 @@ export const sanitizeForContext = (str, max = 255) => {
   s = s.slice(0, max);
   return s;
 };
+
+export const normalizeFields = (fields) => {
+  const out = {};
+
+  for (const k in fields) {
+    out[k] = Array.isArray(fields[k]) ? fields[k][0] : fields[k];
+  }
+
+  return out;
+};

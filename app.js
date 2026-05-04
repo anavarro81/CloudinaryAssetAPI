@@ -4,7 +4,8 @@ import helmet from "helmet";
 import dotenv from "dotenv";
 import cloudinary from "./config/index.js";
 import { uploadImage, listImages } from "./services/cloudinary.js";
-import {sanitizeForContext} from './utils.js'
+import { sanitizeForContext, normalizeFields } from "./utils.js";
+import * as formidable from "formidable";
 
 dotenv.config();
 
@@ -19,23 +20,40 @@ app.get("/health", (req, res) => {
   res.status(200).json({ status: "ok" });
 });
 
-app.post("/dogs/photos", async (req, res) => {
-  const { dogName = "Mascota", description } = req.body;
+app.post("/dogs/photos", (req, res, next) => {
+  const form = new formidable.IncomingForm();
 
-  const safeName = sanitizeForContext(dogName)
-  const safeDescription = sanitizeForContext(description)
+  try {
+    form.on("error", (err) => {
+      console.error("error en form ", err);
+      next(err);
+    });
 
-  let context =
-    `name=${safeName}` + `${safeDescription ? `|description=${safeDescription}` : ""}`;
+    form.parse(req, (err, fields, files) => {
+      if (err) {
+        next(err);
+        return;
+      }
 
-  const { success, data, error } = await uploadImage("./dog1.jpg", context);
+      if (Object.keys(files).length === 0) {
+        res.status(400).json({ error: "No se ha adjuntado ningun fichero" });
+      }
 
-  if (success) {
-    console.log("Foto subida ", data);
-    res.status(200).json({ status: "Foto subida correctamente" });
-  } else {
-    console.error("Error al subir la foto ", error);
-    res.status(400).json({ status: "Error al subir la foto" });
+      // Se normalizan los nombre de los archivos, pueden llegan dentro de un array
+      const norm = normalizeFields(fields);
+      const { dogName, description } = norm;
+
+      console.log("norm ", norm);
+
+      uploadImage(files.dogImage[0].filepath, {
+        name: dogName || "",
+        description: description || "",
+      });
+
+      res.status(200).json({ status: "Foto subida correctamente" });
+    });
+  } catch (error) {
+    console.log("error al hacer el parse ", error);
   }
 });
 
