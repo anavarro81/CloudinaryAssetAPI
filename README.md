@@ -15,4 +15,12 @@ fields  { dogName: [ 'Pepe' ], description: [ 'Perro muy timido' ] }
 norm  { dogName: 'Pepe', description: 'Perro muy timido' }
 ```
 
+## Subir imagenes a Cloudinary
+
+- Se usa el endpoint: `/dogs/photos`
+
+- Se usa *formidable* para subir los archivos
+
+- Los datos de texto (fields) pueden venir dentro de un array, por eso se llama `normalizeFields` para extraer
+  esos datos en caso de que sea necesario. 
 
