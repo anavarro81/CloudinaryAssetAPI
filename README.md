@@ -31,3 +31,8 @@ Se llama al método `fs.unlink` con el path del fichero
 
 ## Login y registro. 
 Se incluye Login para que pueda subir las imagenes. 
+
+## Campos
+- email
+- password
+- role
