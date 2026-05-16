@@ -14,7 +14,6 @@ export const uploadImage = async (file, context) => {
       folder: "recentUploads",
       timeout: 60000,
     });
-    console.log("result ", result);
 
     return { success: true, data: result };
   } catch (err) {
@@ -26,8 +25,6 @@ export const uploadImage = async (file, context) => {
 };
 
 export const listImages = async (folder = "recentUploads") => {
-  console.log("folder ", folder);
-
   try {
     const res = await cloudinary.search
       .expression(`folder: ${folder}`)
@@ -36,19 +33,22 @@ export const listImages = async (folder = "recentUploads") => {
       .with_field("context")
       .execute();
 
-    console.log("res ", res);
-
-    const resources = (res.resources || []).map((r) => ({
-      url: r.secure_url || "",
-      context: r.context?.custom ?? r.context,
-    }));
+    const resources = (res.resources || []).map((r) => {
+      return {
+        id: r.asset_id,
+        url: r.secure_url,
+        alt: "foto de perro",
+        title: r.context?.name ?? "Foto de perro",
+        description: r.context?.description ?? "Descripción de perro",
+      };
+    });
 
     return { success: true, data: { resources } };
   } catch (err) {
+    console.error("Error al recuperar las fotos de los perros ", err);
     return {
       success: false,
       error: err?.error?.message || err?.message || "Unknown error",
     };
   }
 };
-

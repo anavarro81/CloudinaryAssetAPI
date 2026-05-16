@@ -1,3 +1,5 @@
+import fs from "fs/promises";
+
 export const sanitizeForContext = (str, max = 255) => {
   if (!str) return "";
 
@@ -20,4 +22,18 @@ export const normalizeFields = (fields) => {
   }
 
   return out;
+};
+
+// Se limpian los archivos temporales que no se llegan a subir por no ser correctos
+// Evita que se acumulen el el servidor y lo puedan saturar con el tiempo.
+export const cleanupUploadedFiles = async (file) => {
+  if (!file) return;
+
+  const path = file.filepath || file.path;
+
+  if (!path) return;
+
+  try {
+    await fs.unlink(f);
+  } catch (_) {}
 };
