@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import { sanitizeForContext, normalizeFields } from "./utils/utils.js";
 import * as formidable from "formidable";
 import router from "./routes/dog.routes.js";
+import authRouter from "./routes/auth.routes.js";
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ app.get("/health", (req, res) => {
 });
 
 app.use("/dogs", router);
+app.use("/users", authRouter);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server running on PORT: ${process.env.PORT}`);

@@ -1,16 +1,17 @@
 # CloudinaryAssetAPI
+
 A Node.js API to fetch and serve image assets from specific Cloudinary folders
 
+Los archivos estan llegando dentro de un array al llamar a `form.parse` de formidable. Para normalizarlo se llama a una utilidad que extrae el primer elemento.
 
-Los archivos estan llegando dentro de un array al llamar a `form.parse` de formidable. Para normalizarlo se llama a una utilidad que extrae el primer elemento. 
+_Entrada_
 
-
-*Entrada* 
 ```JSON
 fields  { dogName: [ 'Pepe' ], description: [ 'Perro muy timido' ] }
 ```
 
-*Salida*
+_Salida_
+
 ```JSON
 norm  { dogName: 'Pepe', description: 'Perro muy timido' }
 ```
@@ -19,20 +20,21 @@ norm  { dogName: 'Pepe', description: 'Perro muy timido' }
 
 - Se usa el endpoint: `/dogs/photos`
 
-- Se usa *formidable* para subir los archivos
+- Se usa _formidable_ para subir los archivos
 
 - Los datos de texto (fields) pueden venir dentro de un array, por eso se llama `normalizeFields` para extraer
-  esos datos en caso de que sea necesario. 
+  esos datos en caso de que sea necesario.
 
-## Borrado de ficheros temporales si no es correcto. 
-Es buena practica borrar los archivos temporales si no se pueden subir por tamaño o tipo. 
+## Borrado de ficheros temporales si no es correcto.
+
+Es buena practica borrar los archivos temporales si no se pueden subir por tamaño o tipo.
 Se usa la función `cleanupUploadedFiles(file)` para hacerlo
 Se llama al método `fs.unlink` con el path del fichero
 
-## Login y registro. 
-Se incluye Login para que pueda subir las imagenes. 
 
-## Campos
-- email
-- password
-- role
+## Scripts
+
+### Creación de usuarios
+
+- Comando: `npm run seeds`
+  Crea los usuarios por defecto "Antonio" y "Karlos" con los roles de "admin" y "editor" respectivamente.

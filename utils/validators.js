@@ -1,9 +1,14 @@
 import Joi from "joi";
 
-const validateEmail = Joi.string().email().required().message({
+const validateEmail = Joi.string().email().required().messages({
   "string.email": "El email debe ser una dirección de correo válida",
   "string.empty": "El email no puede estar vacío",
   "any.required": "El email es obligatorio",
+});
+
+const validateName = Joi.string().required().messages({  
+  "string.empty": "El nombre no puede estar vacío",
+  "any.required": "El nombre es obligatorio",
 });
 
 const validatePassword = Joi.string()
@@ -18,6 +23,7 @@ const validatePassword = Joi.string()
 
 const registerSchema = Joi.object({
   email: validateEmail,
+  name: validateName,
   password: validatePassword,
   role: Joi.string().valid("admin", "editor").required().messages({
     "any.only": 'El rol debe ser "admin" o "editor"',
@@ -26,6 +32,7 @@ const registerSchema = Joi.object({
 
 const loginSchema = Joi.object({
   email: validateEmail,
+  name: validateName,
   password: validatePassword,
 });
 
@@ -43,7 +50,10 @@ export const validateUser = (user, type = "register") => {
   if (!error) {
     return {
       success: true,
-      message: type === "register" ? "Usuario registrado con exito " : "Login correcto"
+      message:
+        type === "register"
+          ? "Usuario registrado con exito "
+          : "Login correcto",
     };
   }
 

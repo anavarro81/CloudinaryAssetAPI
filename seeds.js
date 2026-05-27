@@ -1,6 +1,7 @@
 import { MongoClient, ServerApiVersion } from "mongodb";
 import dotenv from "dotenv";
 import { hastPassword } from "./utils/auth.js";
+import { validateUser } from "./utils/validators.js";
 dotenv.config();
 
 async function insertUsers() {
@@ -30,18 +31,43 @@ async function insertUsers() {
     const db = client.db(dbName);
     const usersCol = db.collection("users");
 
-    const newUsers = [
-      {
-        name: "Antonio",
-        password: await hastPassword("oZXn7qDn9qB3R0"),
-        role: "admin",
-      },
-      {
-        name: "Karlos",
-        password: await hastPassword("jaQlVG0END3HWf"),
-        role: "editor",
-      },
-    ];
+    const { success: valirAdmin, errors: adminMessage } = validateUser({
+      name: process.env.USER_ADMIN_NAME,
+      password: process.env.USER_ADMIN_PASSWORD,
+      email: process.env.USER_ADMIN_EMAIL,
+      role: process.env.USER_ADMIN_ROLE,
+    });
+
+    if (!valirAdmin) {
+      console.error("Admin no valido ", adminMessage);
+      process.exit(-1);
+    }
+
+    let { success: validEditor, errors: editorMessage } = validateUser({
+      name: process.env.USER_EDITOR_NAME,
+      password: process.env.USER_EDITOR_PASSWORD,
+      email: process.env.USER_EDITOR_EMAIL,
+      role: process.env.USER_EDITOR_ROLE,
+    });
+    if (!validEditor) {
+      console.error("editor no valido ", editorMessage);
+      process.exit(-1);
+    }
+
+    const newUsers = [];
+
+    newUsers.push({
+      name: process.env.USER_ADMIN_NAME,
+      password: process.env.USER_ADMIN_PASSWORD,
+      email: process.env.USER_ADMIN_EMAIL,
+      role: process.env.USER_ADMIN_ROLE,
+    });
+    newUsers.push({
+      name: process.env.USER_EDITOR_NAME,
+      password: process.env.USER_EDITOR_PASSWORD,
+      email: process.env.USER_EDITOR_EMAIL,
+      role: process.env.USER_EDITOR_ROLE,
+    });
 
     const result = await usersCol.insertMany(newUsers);
 
